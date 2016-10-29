@@ -1,4 +1,4 @@
 # tensorflow_examples
-some examples about tf usages
+some tf examples about
 
 continue updating...
