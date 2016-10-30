@@ -9,8 +9,8 @@ embedding[0] = padding
 embedding[1] = UNK
 '''
 def read_dataset(filename):
-    label_hash = pkl.load(open('label_hash.pkl'))
-    word_hash = pkl.load(open('word_hash.pkl'))
+    label_hash = pkl.load(open('../../data/PTB/label_hash.pkl'))
+    word_hash = pkl.load(open('../../data/PTB/word_hash.pkl'))
     words_list = []
     labels_list = []
     for line in open(filename):

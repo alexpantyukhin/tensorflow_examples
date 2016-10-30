@@ -6,7 +6,7 @@ import tensorflow.examples.tutorials.mnist.input_data as input_data
 
 def mnist_softmax():
     #load mnist data
-    mnist = input_data.read_data_sets('../data/MNIST_data',one_hot=True)
+    mnist = input_data.read_data_sets('../data/MNIST',one_hot=True)
 
     #build maps
     x = tf.placeholder(tf.float32,shape=[None,784])

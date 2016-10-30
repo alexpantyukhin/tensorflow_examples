@@ -14,7 +14,7 @@ def max_pool_2x2(x):
     return tf.nn.max_pool(x,ksize=[1,2,2,1],
             strides=[1,2,2,1],padding='SAME')
 def mnist_cnn():
-    mnist = input_data.read_data_sets('../../data/MNIST_data',one_hot=True)
+    mnist = input_data.read_data_sets('../../data/MNIST',one_hot=True)
     #first_layer
     x = tf.placeholder(tf.float32,[None,784])
     y_ = tf.placeholder(tf.float32,[None,10])

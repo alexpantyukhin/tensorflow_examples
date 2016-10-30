@@ -10,8 +10,8 @@ def bias_variable(shape):
     return tf.Variable(tf.truncated_normal(shape=shape))
 def postagger():
     
-    train_data = Dataset('penn.train.pos')
-    dev_data = Dataset('penn.devel.pos')
+    train_data = Dataset('../../data/PTB/penn.train.pos')
+    dev_data = Dataset('../../data/PTB/penn.devel.pos')
     embedding = tf.get_variable("embedding",[23769,100],tf.float32)
     
     words_hash = tf.placeholder(tf.int32,[None,3])

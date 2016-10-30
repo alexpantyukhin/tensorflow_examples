@@ -9,7 +9,7 @@ def weight_variable(shape):
 def bias_variable(shape):
     return tf.Variable(tf.zeros(shape=shape))
 def mnist_mlp():
-    mnist = input_data.read_data_sets('../../data/MNIST_data')
+    mnist = input_data.read_data_sets('../../data/MNIST')
     x = tf.placeholder(tf.float32,[None,784])
     y_ = tf.placeholder(tf.int32,[None])
 
