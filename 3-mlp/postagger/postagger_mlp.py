@@ -42,7 +42,7 @@ def postagger():
     loss = tf.reduce_mean(cross_entropy)
     #train
     train = tf.train.AdamOptimizer(0.001).minimize(loss)
-
+    
     #eval
     correct_prediction = tf.nn.in_top_k(logits,y_,1)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
