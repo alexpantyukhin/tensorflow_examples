@@ -31,11 +31,14 @@ def postagger():
 
     h_2 = tf.nn.relu(tf.matmul(h_1,W_fc2) + b_fc2)
 
+    #dropout layer
+    keep_prob = tf.placeholder(tf.float32) 
+    h_2_drop = tf.nn.dropout(h_2,keep_prob)
     #linear
     W_fc3 = weight_variable([64,45])
     b_fc3 = bias_variable([45])
     
-    logits = tf.matmul(h_2,W_fc3) + b_fc3
+    logits = tf.matmul(h_2_drop,W_fc3) + b_fc3
 
     #loss
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits,y_)
@@ -46,6 +49,8 @@ def postagger():
     #eval
     correct_prediction = tf.nn.in_top_k(logits,y_,1)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
+    
+    
     config = tf.ConfigProto()
     config.gpu_options.allow_growth=True
     with tf.Session(config=config) as sess:
@@ -56,11 +61,11 @@ def postagger():
             if cur_epoch < train_data.epochs():
                 cur_epoch += 1
                 print "epoch: "+str(cur_epoch)
-                print accuracy.eval(feed_dict={words_hash:dev_words,y_:dev_labels})
+                print accuracy.eval(feed_dict={words_hash:dev_words,y_:dev_labels,keep_prob:1})
             batch_x,batch_y = train_data.next_batch(128)
-            sess.run(train,feed_dict={words_hash:batch_x,y_:batch_y})
+            sess.run(train,feed_dict={words_hash:batch_x,y_:batch_y,keep_prob:0.5})
         print "last epoch:"
-        print accuracy.eval(feed_dict={words_hash:dev_words,y_:dev_labels})
+        print accuracy.eval(feed_dict={words_hash:dev_words,y_:dev_labels,keep_prob:1})
         
 if __name__=='__main__':
     postagger()
