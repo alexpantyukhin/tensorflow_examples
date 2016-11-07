@@ -2,9 +2,9 @@
 #coding:utf8
 import numpy
 class Dataset():
-    def __init__(self,data,label):
+    def __init__(self,data,labels):
         self._data = data
-        self._labels = label
+        self._labels = labels
         self._numbers = self._data.shape[0]
         self._index_in_epoch = 0
         self._epochs = 0

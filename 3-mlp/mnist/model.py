@@ -15,7 +15,7 @@ def inference(images,hidden1_units,hidden2_units):
         biases = tf.Variable(
                 tf.truncated_normal([hidden1_units]),
                 name = 'biases')
-        hidden1 = tf.relu(tf.matmul(images,weights) + biases)
+        hidden1 = tf.nn.relu(tf.matmul(images,weights) + biases)
     with tf.name_scope('hidden2'):
         weights = tf.Variable(
                 tf.truncated_normal([hidden1_units,hidden2_units]),
@@ -23,7 +23,7 @@ def inference(images,hidden1_units,hidden2_units):
         biases = tf.Variable(
                 tf.truncated_normal([hidden2_units]),
                 name = 'biases')
-        hidden2 = tf.relu(tf.matmul(images,weights) + biases)
+        hidden2 = tf.nn.relu(tf.matmul(hidden1,weights) + biases)
     with tf.name_scope('softmax_linear'):
         weights = tf.Variable(
                 tf.truncated_normal([hidden2_units,NUM_CLASSES]),
@@ -31,7 +31,7 @@ def inference(images,hidden1_units,hidden2_units):
         biases = tf.Variable(
                 tf.truncated_normal([NUM_CLASSES]),
                 name = 'biases')
-        logits = tf.relu(tf.matmul(images,weights) + biases)
+        logits = tf.nn.relu(tf.matmul(hidden2,weights) + biases)
     return logits
 
 def loss(logits,labels):
@@ -42,10 +42,10 @@ def loss(logits,labels):
 
 def train(loss,learning_rate):
     optimizer = tf.train.AdamOptimizer(learning_rate)
-    train_op = tf.reduce_mean(loss)
-    return op
+    train_op = optimizer.minimize(loss) 
+    return train_op
 
 def evaluation(logits,labels):
     correct = tf.nn.in_top_k(logits,labels,1)
-    accuracy = tf.reduce_mean(tf.cast(correct,tf.float32))
+    accuracy = tf.reduce_sum(tf.cast(correct,tf.float32))
     return accuracy
