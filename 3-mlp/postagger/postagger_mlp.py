@@ -2,54 +2,62 @@
 #coding:utf8
 import tensorflow as tf
 import numpy as np
+import os
 from dataset import Dataset
 
-def weight_variable(shape):
-    return tf.Variable(tf.truncated_normal(shape=shape))
-def bias_variable(shape):
-    return tf.Variable(tf.truncated_normal(shape=shape))
-def postagger():
+flags = tf.app.flags
+FLAGS = flags.FLAGS
+flags.DEFINE_integer('epochs',10,'epochs')
+flags.DEFINE_integer('batch_size',128,'batch_size')
+flags.DEFINE_integer('word_dim',100,'word dim')
+flags.DEFINE_integer('emb_size',23769,'embedding size')
+flags.DEFINE_integer('input_units',300,'input layer units')
+flags.DEFINE_integer('hidden1_units',128,'hidden1 layer units')
+flags.DEFINE_integer('hidden2_units',64,'hidden2 layer units')
+flags.DEFINE_integer('classes',45,'the output classes')
+flags.DEFINE_float('dropout',0.5,'dropout')
+flags.DEFINE_float('learning_rate',1e-3,'learning rate')
+flags.DEFINE_string('data_path','../../data/PTB','the dataset path')
+
+def mlp():
     
-    train_data = Dataset('../../data/PTB/penn.train.pos')
-    dev_data = Dataset('../../data/PTB/penn.devel.pos')
-    embedding = tf.get_variable("embedding",[23769,100],tf.float32)
+    train_data = Dataset(os.path.join(FLAGS.data_path,'penn.train.pos'))
+    dev_data = Dataset(os.path.join(FLAGS.data_path,'penn.devel.pos'))
+
+    embedding = tf.get_variable("embedding",[FLAGS.emb_size,FLAGS.word_dim],tf.float32)
     
     words_hash = tf.placeholder(tf.int32,[None,3])
     y_ = tf.placeholder(tf.int32,[None])
 
-    x = tf.reshape(tf.nn.embedding_lookup(embedding,words_hash),(-1,300))
+    x = tf.reshape(tf.nn.embedding_lookup(embedding,words_hash),(-1,FLAGS.input_units))
 
     #first layer
-    W_fc1 = weight_variable([300,128])
-    b_fc1 = bias_variable([128])
-
-    h_1 = tf.nn.relu(tf.matmul(x,W_fc1) + b_fc1)
-
+    with tf.variable_scope('hidden1'):
+        weights = tf.get_variable('weight',[FLAGS.input_units,FLAGS.hidden1_units])
+        biases = tf.get_variable('biases',[FLAGS.hidden1_units])
+        hidden1 = tf.nn.relu(tf.matmul(x,weights) + biases)
     #second layer
-    W_fc2 = weight_variable([128,64])
-    b_fc2 = bias_variable([64])
-
-    h_2 = tf.nn.relu(tf.matmul(h_1,W_fc2) + b_fc2)
-
+    with tf.variable_scope('hidden2'):
+        weights = tf.get_variable('weight',[FLAGS.hidden1_units,FLAGS.hidden2_units])
+        biases = tf.get_variable('weights',[FLAGS.hidden2_units])
+        hidden2 = tf.nn.relu(tf.matmul(hidden1,weights) + biases)
     #dropout layer
     keep_prob = tf.placeholder(tf.float32) 
-    h_2_drop = tf.nn.dropout(h_2,keep_prob)
+    hidden2_drop = tf.nn.dropout(hidden2,keep_prob)
     #linear
-    W_fc3 = weight_variable([64,45])
-    b_fc3 = bias_variable([45])
-    
-    logits = tf.matmul(h_2_drop,W_fc3) + b_fc3
-
+    with tf.variable_scope('linear'):
+        weights = tf.get_variable('weights',[FLAGS.hidden2_units,FLAGS.classes])
+        biases = tf.get_variable('biases',[FLAGS.classes])
+        logits = tf.matmul(hidden2_drop,weights) + biases
     #loss
-    cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits,y_)
-    loss = tf.reduce_mean(cross_entropy)
+    with tf.variable_scope('loss'):
+        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits,y_,name = 'cross_entropy')
+        loss = tf.reduce_mean(cross_entropy,name = 'xentropy')
     #train
-    train = tf.train.AdamOptimizer(0.001).minimize(loss)
-    
+    train = tf.train.AdamOptimizer(FLAGS.learning_rate).minimize(loss)
     #eval
     correct_prediction = tf.nn.in_top_k(logits,y_,1)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
-    
     
     config = tf.ConfigProto()
     config.gpu_options.allow_growth=True
@@ -57,15 +65,16 @@ def postagger():
         sess.run(tf.initialize_all_variables())
         cur_epoch = 0
         dev_words,dev_labels = dev_data.all_data()
-        while train_data.epochs() < 100:
+        while train_data.epochs() < FLAGS.epochs:
             if cur_epoch < train_data.epochs():
                 cur_epoch += 1
                 print "epoch: "+str(cur_epoch)
                 print accuracy.eval(feed_dict={words_hash:dev_words,y_:dev_labels,keep_prob:1})
-            batch_x,batch_y = train_data.next_batch(128)
-            sess.run(train,feed_dict={words_hash:batch_x,y_:batch_y,keep_prob:0.5})
+            batch_x,batch_y = train_data.next_batch(FLAGS.batch_size)
+            sess.run(train,feed_dict={words_hash:batch_x,y_:batch_y,keep_prob:1-FLAGS.dropout})
         print "last epoch:"
         print accuracy.eval(feed_dict={words_hash:dev_words,y_:dev_labels,keep_prob:1})
-        
+def main(_):
+    mlp()
 if __name__=='__main__':
-    postagger()
+    tf.app.run()
