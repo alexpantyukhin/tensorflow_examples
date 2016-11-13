@@ -9,8 +9,8 @@ embedding[0] = padding
 embedding[1] = UNK
 '''
 def read_dataset(filename):
-    label_hash = pkl.load(open('../../data/PTB/label_hash.pkl'))
-    word_hash = pkl.load(open('../../data/PTB/word_hash.pkl'))
+    label_hash = pkl.load(open('../../data/PTB/label2id.pkl'))
+    word_hash = pkl.load(open('../../data/PTB/word2id.pkl'))
     words_list = []
     labels_list = []
     for line in open(filename):
@@ -35,7 +35,7 @@ def read_dataset(filename):
             words_list.append(word_list)
             #add cur label
             label = tokens[i].rsplit('/',1)[1]
-            labels_list.append([label_hash[label] if label in label_hash else 0])
+            labels_list.append([label_hash[label] - 1 if label in label_hash else 0])
 
     words = numpy.array(words_list,numpy.int32)
     labels = numpy.array(labels_list,numpy.int32).reshape([len(labels_list),])
@@ -72,13 +72,3 @@ class Dataset():
             assert batch_size <= self._numbers
         end = self._index_in_epoch
         return self._words[start:end],self._labels[start:end]
-if __name__=='__main__':
-    word_count = pkl.load(open('word_count.pkl'))
-    word_hash = {}
-    count = 2
-    for key,value in word_count.items():
-        if value > 1:
-            word_hash[key] = count
-            count += 1
-    pkl.dump(word_hash,open('word_hash.pkl','w'))
-    print len(word_hash)

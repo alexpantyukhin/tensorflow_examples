@@ -4,9 +4,12 @@ from __future__ import print_function
 
 import tensorflow as tf
 import numpy as np
-
-# Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
+
+flags = tf.app.flags
+FLAGS = flag.FLAGS
+FLAGS.DEFINE_integer('batch_size',128,'batch size')
+# Import MNIST data
 mnist = input_data.read_data_sets("../../data/MNIST", one_hot=True)
 
 '''
@@ -89,11 +92,8 @@ with tf.Session(config=config) as sess:
         # Run optimization op (backprop)
         sess.run(optimizer, feed_dict={x: batch_x, y: batch_y})
         step += 1
-    print("Optimization Finished!")
-
     # Calculate accuracy for 128 mnist test images
     test_len = 10000
     test_data = mnist.test.images[:test_len].reshape((-1, n_steps, n_input))
     test_label = mnist.test.labels[:test_len]
-    print("Testing Accuracy:", \
-        sess.run(accuracy, feed_dict={x: test_data, y: test_label}))
+    print("Testing Accuracy:", sess.run(accuracy, feed_dict={x: test_data, y: test_label}))
