@@ -15,13 +15,14 @@ flags = tf.app.flags
 FLAGS = flags.FLAGS
 flags.DEFINE_integer('batch_size',50,'batch_size')
 flags.DEFINE_integer('n_hidden',300,'hidden units')
+flags.DEFINE_integer('n_layers',2,'layers of lstm')
 flags.DEFINE_integer('epoch_step',100,'nums of epochs')
 flags.DEFINE_integer('epoch_size',1000,'batchs of each epoch')
 flags.DEFINE_integer('n_classes',46,'nums of classes')
 flags.DEFINE_integer('emb_size',23769,'embedding size')
-flags.DEFINE_integer('word_dim',100,'word dim')
+flags.DEFINE_integer('word_dim',50,'word dim')
 flags.DEFINE_float('learning_rate',1e-3,'learning rate')
-flags.DEFINE_float('dropout',0.5,'dropout')
+flags.DEFINE_float('dropout',0,'dropout')
 flags.DEFINE_string('data_path','../../data/PTB','data path')
 
 def evalution(sess,correct,x_pl,y_pl,mask_pl,output_keep_prob_pl,dataset):
@@ -52,7 +53,8 @@ def dynamic_rnn():
 
     lstm_cell = tf.nn.rnn_cell.BasicLSTMCell(FLAGS.n_hidden,state_is_tuple=True,activation=tf.nn.relu)
     lstm_cell = tf.nn.rnn_cell.DropoutWrapper(lstm_cell,output_keep_prob=1-FLAGS.dropout)
-    
+    lstm_cell = tf.nn.rnn_cell.MultiRNNCell([lstm_cell] * FLAGS.n_layers, state_is_tuple=True)
+
     # Get lstm cell output
     outputs, _ = tf.nn.dynamic_rnn(lstm_cell, x, dtype=tf.float32)
     outputs = tf.reshape(outputs,[-1,FLAGS.n_hidden])
@@ -63,8 +65,7 @@ def dynamic_rnn():
         biases = tf.get_variable("biases",[FLAGS.n_classes],tf.float32)
         logits = tf.matmul(outputs, weights) + biases
     
-    #loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits,y_) * tf.cast(mask,tf.float32))
-    loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits,y_))
+    loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits,y_) * tf.cast(mask,tf.float32))
     train_op = tf.train.AdamOptimizer(FLAGS.learning_rate).minimize(loss)
     
     y = tf.cast(tf.nn.in_top_k(logits,y_,1),tf.int32) * mask
