@@ -6,6 +6,7 @@ import tensorflow as tf
 from input_data import read_dataset
 from copy import deepcopy
 import numpy
+from time import time
 import os
 import sys
 sys.path.append('../../1-utils')
@@ -91,6 +92,7 @@ def dynamic_rnn():
     correct = tf.reduce_sum(y)
 
     with tf.Session(config=util.gpu_config()) as sess:
+        start = time()
         sess.run(tf.initialize_all_variables())
         FLAGS.epoch_size = train_data.numbers() // FLAGS.batch_size
         for step in range(FLAGS.epoch_size * FLAGS.epoch_step):
@@ -99,6 +101,10 @@ def dynamic_rnn():
             sess.run(train_op,feed_dict={x_:batch_x, y_:batch_y, output_keep_prob:1-FLAGS.dropout, mask:mask_feed})
             if step % FLAGS.epoch_size == 0:
                 evalution(sess,correct,x_,y_,mask,output_keep_prob,dev_data)
+        # last evalution
+        evalution(sess,correct,x_,y_,mask,output_keep_prob,dev_data)
+        end = time()
+        print 'time cost:' + str(end-start) + ' seconds'
 def main(_):
     dynamic_rnn()
 
