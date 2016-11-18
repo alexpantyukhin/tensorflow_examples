@@ -23,7 +23,7 @@ flags.DEFINE_integer('n_classes',46,'nums of classes')
 flags.DEFINE_integer('emb_size',23769,'embedding size')
 flags.DEFINE_integer('word_dim',50,'word dim')
 flags.DEFINE_float('learning_rate',1e-3,'learning rate')
-flags.DEFINE_float('dropout',0,'dropout')
+lags.DEFINE_float('dropout',0,'dropout')
 flags.DEFINE_string('data_path','../../data/PTB','data path')
 
 def evalution(sess,correct,x_pl,y_pl,mask_pl,output_keep_prob_pl,dataset):
