@@ -4,10 +4,10 @@ import tensorflow as tf
 import numpy as np
 import os
 from dataset import Dataset
-
+from time import time
 flags = tf.app.flags
 FLAGS = flags.FLAGS
-flags.DEFINE_integer('epochs',10,'epochs')
+flags.DEFINE_integer('epochs',100,'epochs')
 flags.DEFINE_integer('batch_size',128,'batch_size')
 flags.DEFINE_integer('word_dim',100,'word dim')
 flags.DEFINE_integer('emb_size',23769,'embedding size')
@@ -62,6 +62,7 @@ def mlp():
     config = tf.ConfigProto()
     config.gpu_options.allow_growth=True
     with tf.Session(config=config) as sess:
+        start = time()
         sess.run(tf.initialize_all_variables())
         cur_epoch = 0
         dev_words,dev_labels = dev_data.all_data()
@@ -74,6 +75,8 @@ def mlp():
             sess.run(train,feed_dict={words_hash:batch_x,y_:batch_y,keep_prob:1-FLAGS.dropout})
         print "last epoch:"
         print accuracy.eval(feed_dict={words_hash:dev_words,y_:dev_labels,keep_prob:1})
+        end = time()
+        print 'time:' + str(end-start) + ' seconds'
 def main(_):
     mlp()
 if __name__=='__main__':
