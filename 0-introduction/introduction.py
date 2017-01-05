@@ -4,7 +4,7 @@
 import tensorflow as tf
 import numpy as np
 
-def run():
+def demo():
 
     x_data = np.random.rand(100).astype(np.float32)
     y_data = x_data * 0.3 + 0.1
@@ -29,5 +29,7 @@ def run():
             if step % 100 == 0:
                 print sess.run(W),sess.run(b)
 
+def main(_):
+    demo()
 if __name__=='__main__':
-    run()
+    tf.app.run()
