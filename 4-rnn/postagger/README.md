@@ -9,4 +9,4 @@
 |multilayer-lstm|3|100|94.5%|
 |bi-lstm|1|10|95.72%|
 |bi-lstm|3|10| |  | |
-|bi-lstm-crf|1|10|96.03|
+|bi-lstm-crf|1|10|96.03%|
