@@ -1,7 +1,7 @@
 # Result
 
-|model|windows size|epochs|accuracy|
-|:------|------|------|------|
+| model   | windows |epochs|accuracy|
+| :------ | :---------:  |------|------|
 |mlp|3|100|95.0%|
 |uni-lstm|1|100|93.5%|
 |uni-lstm|3|100|94.9%|
