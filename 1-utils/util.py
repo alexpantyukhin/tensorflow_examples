@@ -6,7 +6,7 @@ import tensorflow as tf
 
 def gpu_config():
     
-    config = tf.ConfigProto()
+    config = tf.ConfigProto(allow_soft_placement=True)
     config.gpu_options.allow_growth=True
     return config
 
@@ -18,17 +18,21 @@ def padding(data,labels):
 
     max_seg = max([len(instance) for instance in data])
     batch_size = data.shape[0]
-    
     batch_x = numpy.zeros([batch_size, max_seg],numpy.int32)
     batch_y = numpy.zeros([batch_size, max_seg],numpy.int32)
     mask = numpy.zeros([batch_size, max_seg],numpy.int32)
 
     for i in range(batch_size):
-        cur_len = len(data[i])
+        cur_len = numpy.sign(data[i]).sum()
         zeros = [0 for _ in range(max_seg - cur_len)]
         ones = [1 for _ in range(cur_len)]
         batch_x_i = deepcopy(data[i])
         batch_y_i = deepcopy(labels[i])
+        if cur_len == 0:
+            batch_x[i] = zeros
+            batch_y[i] = zeros
+            mask[i] = zeros
+            continue
         if cur_len < max_seg:
             batch_x_i.extend(zeros)
             batch_y_i.extend(zeros)
