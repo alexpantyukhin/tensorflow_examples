@@ -3,14 +3,14 @@
 
 ## tensorflow_examples
 
-+ Introduction(Done)
-+ Utils(ing...)
-+ Linear Model(Done)
-+ MLP(Done)
-+ CNN(Done)
-+ LSTM(Done)
-+ Multilayer-LSTM(Done)
++ Introduction
++ Utils
++ Linear Model
++ MLP
++ CNN
++ LSTM
++ Multilayer-LSTM
 + Bi-LSTM(Done)
-+ Bi-LSTM-CRF(Done)
-+ [Sequence to Sequence with attention](git@github.com:hpzhao/tensorflow_examples.git)(Done)
++ Bi-LSTM-CRF
++ [Sequence to Sequence with attention](git@github.com:hpzhao/tensorflow_examples.git)
 + Muti-Task(To Do)
