@@ -1,5 +1,5 @@
 ### UPDATE:  
-    2017-5-12:有些模型写法比较旧，需要重构，TODO
+    2017-7-11:有些模型写法比较旧，需要重构，TODO
 
 ## tensorflow_examples
 
@@ -12,6 +12,5 @@
 + Multilayer-LSTM(Done)
 + Bi-LSTM(Done)
 + Bi-LSTM-CRF(Done)
-+ Sequence to Sequence(To Do)
-+ Sequence to Sequence with attention(To Do)
++ [Sequence to Sequence with attention](git@github.com:hpzhao/tensorflow_examples.git)(Done)
 + Muti-Task(To Do)
