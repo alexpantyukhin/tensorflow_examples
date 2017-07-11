@@ -12,5 +12,5 @@
 + Multilayer-LSTM
 + Bi-LSTM(Done)
 + Bi-LSTM-CRF
-+ [Sequence to Sequence with attention](git@github.com:hpzhao/tensorflow_examples.git)
++ [Seq2Seq with attention](https://github.com/hpzhao/seq2seq)
 + Muti-Task(To Do)
